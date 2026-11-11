@@ -1,7 +1,58 @@
-{# Admin dashboard (placeholder; the totals are added in the next chunk) #}
+{# Admin dashboard: six cards with the totals from counts #}
 {% extends "base.html" %}
 {% block title %}Admin Dashboard{% endblock %}
 {% block content %}
 <h2>Admin Dashboard</h2>
 <p>Welcome, {{ current_user.name }}</p>
+
+<div class="row g-3">
+    <div class="col-6 col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-6">{{ counts.courses }}</div>
+                <div class="text-muted">Courses</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-6">{{ counts.exams }}</div>
+                <div class="text-muted">Examinations</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-6">{{ counts.examiners }}</div>
+                <div class="text-muted">Examiners</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-6">{{ counts.students }}</div>
+                <div class="text-muted">Students</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-6">{{ counts.slots }}</div>
+                <div class="text-muted">Slots</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-6">{{ counts.bookings }}</div>
+                <div class="text-muted">Bookings</div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
