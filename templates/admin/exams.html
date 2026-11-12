@@ -1,0 +1,44 @@
+{# Admin: list of all examinations #}
+{% extends "base.html" %}
+{% block title %}Examinations{% endblock %}
+{% block content %}
+{# Badge colour for each exam status #}
+{% set status_colors = {"Draft": "secondary", "Slot Creation": "info", "Booking Open": "success",
+                        "Closed": "warning", "Completed": "dark"} %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Examinations</h2>
+    <a class="btn btn-primary" href="{{ url_for('admin_exams.add_exam') }}">Add examination</a>
+</div>
+
+<table class="table table-bordered table-hover">
+    <thead class="table-light">
+        <tr>
+            <th>ID</th>
+            <th>Course</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Max marks</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for exam in exams %}
+        <tr>
+            <td>{{ exam.id }}</td>
+            <td>{{ exam.course.code }}</td>
+            <td>{{ exam.name }}</td>
+            <td>{{ exam.exam_type }}</td>
+            <td>{{ exam.max_marks }}</td>
+            <td><span class="badge bg-{{ status_colors[exam.status] }}">{{ exam.status }}</span></td>
+            <td><a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin_exams.exam_detail', exam_id=exam.id) }}">Manage</a></td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="7" class="text-center text-muted">No examinations yet. Click "Add examination" to create one.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

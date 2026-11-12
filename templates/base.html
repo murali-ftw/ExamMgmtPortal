@@ -20,6 +20,8 @@
             <ul class="navbar-nav me-auto">
                 {% if current_user and current_user.role == "admin" %}
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_dashboard.dashboard') }}">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_courses.list_courses') }}">Courses</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_exams.list_exams') }}">Exams</a></li>
                 {% elif current_user and current_user.role == "examiner" %}
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('examiner_dashboard.dashboard') }}">Dashboard</a></li>
                 {% elif current_user and current_user.role == "student" %}

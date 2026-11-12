@@ -1,0 +1,67 @@
+{# Admin: one examination with its timeline, status buttons and slots #}
+{% extends "base.html" %}
+{% block title %}{{ exam.name }}{% endblock %}
+{% block content %}
+{# Badge colour for each exam status #}
+{% set status_colors = {"Draft": "secondary", "Slot Creation": "info", "Booking Open": "success",
+                        "Closed": "warning", "Completed": "dark"} %}
+
+<h2>{{ exam.name }} <span class="badge bg-{{ status_colors[exam.status] }}">{{ exam.status }}</span></h2>
+<p>
+    <strong>Course:</strong> {{ exam.course.code }} - {{ exam.course.name }} |
+    <strong>Type:</strong> {{ exam.exam_type }} |
+    <strong>Duration:</strong> {{ exam.duration }} minutes |
+    <strong>Maximum marks:</strong> {{ exam.max_marks }}
+</p>
+<div class="mb-4">
+    <a class="btn btn-outline-secondary" href="{{ url_for('admin_exams.edit_exam', exam_id=exam.id) }}">Edit</a>
+    <form method="post" action="{{ url_for('admin_exams.delete_exam', exam_id=exam.id) }}" class="d-inline">
+        <button type="submit" class="btn btn-outline-danger">Delete</button>
+    </form>
+    <a class="btn btn-link" href="{{ url_for('admin_exams.list_exams') }}">Back to examinations</a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">Timeline and status</div>
+    <div class="card-body">
+        <p class="mb-1"><strong>Slot creation:</strong> {{ exam.slot_creation_start }} to {{ exam.slot_creation_end }}</p>
+        <p><strong>Booking:</strong> {{ exam.booking_start }} to {{ exam.booking_end }}</p>
+
+        {% for action_name, label in actions %}
+        <form method="post" action="{{ url_for('admin_exam_status.change_status', exam_id=exam.id, action=action_name) }}" class="d-inline">
+            <button type="submit" class="btn btn-primary me-2">{{ label }}</button>
+        </form>
+        {% else %}
+        <p class="text-muted mb-0">No status changes are possible. This examination is {{ exam.status }}.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<h4>Slots</h4>
+<table class="table table-bordered">
+    <thead class="table-light">
+        <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Examiner</th>
+            <th>Booked / Capacity</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for slot in slots %}
+        <tr>
+            <td>{{ slot.date }}</td>
+            <td>{{ slot.start_time.strftime('%H:%M') }} - {{ slot.end_time.strftime('%H:%M') }}</td>
+            <td>{{ slot.examiner.name }}</td>
+            <td>{{ slot.booked_count }} / {{ slot.capacity }}</td>
+            <td>{{ slot.status }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="5" class="text-center text-muted">No slots yet.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

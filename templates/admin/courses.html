@@ -1,0 +1,43 @@
+{# Admin: list of all courses #}
+{% extends "base.html" %}
+{% block title %}Courses{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Courses</h2>
+    <a class="btn btn-primary" href="{{ url_for('admin_courses.add_course') }}">Add course</a>
+</div>
+
+<table class="table table-bordered table-hover">
+    <thead class="table-light">
+        <tr>
+            <th>ID</th>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Exams</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for course in courses %}
+        <tr>
+            <td>{{ course.id }}</td>
+            <td>{{ course.code }}</td>
+            <td>{{ course.name }}</td>
+            <td>{{ course.status }}</td>
+            <td>{{ course.exams|length }}</td>
+            <td>
+                <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('admin_courses.edit_course', course_id=course.id) }}">Edit</a>
+                <form method="post" action="{{ url_for('admin_courses.delete_course', course_id=course.id) }}" class="d-inline">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="6" class="text-center text-muted">No courses yet. Click "Add course" to create one.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
