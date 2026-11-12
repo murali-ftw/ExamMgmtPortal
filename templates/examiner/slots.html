@@ -1,0 +1,64 @@
+{# Examiner: my slots, with an exam filter and Edit/Delete while the slot can still be changed #}
+{% extends "base.html" %}
+{% block title %}My Slots{% endblock %}
+{% block content %}
+<h2 class="mb-3">My Slots</h2>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <select name="exam_id" class="form-select">
+            <option value="">All my exams</option>
+            {% for exam in my_exams %}
+            <option value="{{ exam.id }}" {% if exam_id == exam.id %}selected{% endif %}>{{ exam.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-secondary">Filter</button>
+    </div>
+</form>
+
+<table class="table table-bordered table-hover">
+    <thead class="table-light">
+        <tr>
+            <th>ID</th>
+            <th>Exam</th>
+            <th>Date</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Capacity</th>
+            <th>Booked</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for slot in slots %}
+        <tr>
+            <td>{{ slot.id }}</td>
+            <td>{{ slot.exam.name }}</td>
+            <td>{{ slot.date }}</td>
+            <td>{{ slot.start_time.strftime('%H:%M') }}</td>
+            <td>{{ slot.end_time.strftime('%H:%M') }}</td>
+            <td>{{ slot.capacity }}</td>
+            <td>{{ slot.booked_count }}</td>
+            <td>{{ slot.status }}</td>
+            <td>
+                {% if slot_can_be_edited(slot) %}
+                <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('examiner_slots.edit_slot', slot_id=slot.id) }}">Edit</a>
+                <form method="post" action="{{ url_for('examiner_slots.delete_slot', slot_id=slot.id) }}" class="d-inline">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                </form>
+                {% else %}
+                <span class="small text-muted">Locked (booking started)</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="9" class="text-center text-muted">No slots yet. Create one from My Exams.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

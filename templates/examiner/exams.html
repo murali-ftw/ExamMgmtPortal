@@ -1,0 +1,44 @@
+{# Examiner: exams I am assigned to, with a Create slot button when slot creation is open #}
+{% extends "base.html" %}
+{% block title %}My Exams{% endblock %}
+{% block content %}
+<h2 class="mb-3">My Exams</h2>
+
+<table class="table table-bordered table-hover">
+    <thead class="table-light">
+        <tr>
+            <th>Exam</th>
+            <th>Course</th>
+            <th>Type</th>
+            <th>Exam dates (booking period)</th>
+            <th>Status</th>
+            <th>Slot creation window</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in rows %}
+        <tr>
+            <td>{{ row.exam.name }}</td>
+            <td>{{ row.exam.course.code }}</td>
+            <td>{{ row.exam.exam_type }}</td>
+            <td>{{ row.exam.booking_start }} to {{ row.exam.booking_end }}</td>
+            <td>{{ row.exam.status }}</td>
+            <td>{{ row.exam.slot_creation_start }} to {{ row.exam.slot_creation_end }}</td>
+            <td>
+                {% if row.creation_open %}
+                <a class="btn btn-sm btn-primary" href="{{ url_for('examiner_slots.create_slot', exam_id=row.exam.id) }}">Create slot</a>
+                {% else %}
+                <span class="small text-muted">Slot creation closed</span>
+                {% endif %}
+                <a class="btn btn-sm btn-link" href="{{ url_for('examiner_slots.my_slots', exam_id=row.exam.id) }}">View slots</a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="7" class="text-center text-muted">You are not assigned to any exam yet.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

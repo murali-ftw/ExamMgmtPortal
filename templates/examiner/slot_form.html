@@ -1,0 +1,30 @@
+{# Examiner: create or edit a slot (slot is None when creating) #}
+{% extends "base.html" %}
+{% block title %}{% if slot %}Edit slot{% else %}Create slot{% endif %}{% endblock %}
+{% block content %}
+<h2>{% if slot %}Edit slot{% else %}Create slot{% endif %}</h2>
+<p class="text-muted">Exam: {{ exam.name }} ({{ exam.course.code }})</p>
+
+<form method="post" class="col-md-6">
+    <div class="mb-3">
+        <label class="form-label">Date</label>
+        <input type="date" name="slot_date" class="form-control" value="{{ form.get('slot_date', '') }}" required>
+    </div>
+    <div class="row">
+        <div class="col-6 mb-3">
+            <label class="form-label">Start time</label>
+            <input type="time" name="start_time" class="form-control" value="{{ form.get('start_time', '') }}" required>
+        </div>
+        <div class="col-6 mb-3">
+            <label class="form-label">End time</label>
+            <input type="time" name="end_time" class="form-control" value="{{ form.get('end_time', '') }}" required>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Capacity (number of students)</label>
+        <input type="number" name="capacity" class="form-control" min="1" value="{{ form.get('capacity', '') }}" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a class="btn btn-secondary" href="{{ url_for('examiner_slots.my_slots') }}">Cancel</a>
+</form>
+{% endblock %}
