@@ -3,6 +3,7 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from database import db
 from helpers.auth_helpers import role_required
+from helpers.form_helpers import to_int
 from models import Course
 
 bp = Blueprint("admin_courses", __name__, url_prefix="/admin/courses")
@@ -17,11 +18,14 @@ def read_course_form(form, course_id=None):
         "name": form.get("name", "").strip(),
         "description": form.get("description", "").strip(),
         "status": form.get("status", "Active"),
+        "credits": to_int(form.get("credits")),
     }
     if not data["code"] or not data["name"]:
         return data, "Course code and name are required."
     if data["status"] not in COURSE_STATUSES:
         return data, "Please choose a valid status."
+    if data["credits"] is None or data["credits"] < 1 or data["credits"] > 10:
+        return data, "Credits must be a whole number from 1 to 10."
     same_code = Course.query.filter_by(code=data["code"]).first()
     if same_code is not None and same_code.id != course_id:
         return data, "Another course already uses the code " + data["code"] + "."
@@ -47,8 +51,8 @@ def add_course():
             flash(error, "danger")
             form = request.form
         else:
-            course = Course(code=data["code"], name=data["name"],
-                            description=data["description"], status=data["status"])
+            course = Course(code=data["code"], name=data["name"], description=data["description"],
+                            status=data["status"], credits=data["credits"])
             db.session.add(course)
             db.session.commit()
             flash("Course " + course.code + " added.", "success")
@@ -63,7 +67,7 @@ def edit_course(course_id):
     # Show the form filled with the course, and save the changes
     course = db.get_or_404(Course, course_id)
     form = {"code": course.code, "name": course.name,
-            "description": course.description or "", "status": course.status}
+            "description": course.description or "", "status": course.status, "credits": course.credits}
 
     if request.method == "POST":
         data, error = read_course_form(request.form, course_id=course.id)
@@ -75,6 +79,7 @@ def edit_course(course_id):
             course.name = data["name"]
             course.description = data["description"]
             course.status = data["status"]
+            course.credits = data["credits"]
             db.session.commit()
             flash("Course " + course.code + " updated.", "success")
             return redirect(url_for("admin_courses.list_courses"))

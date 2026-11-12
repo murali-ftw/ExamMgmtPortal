@@ -11,3 +11,4 @@ class Course(db.Model):
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text)
     status = db.Column(db.String(20), default="Active")
+    credits = db.Column(db.Integer, nullable=False, default=4)

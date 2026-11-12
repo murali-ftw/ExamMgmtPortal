@@ -13,6 +13,7 @@
             <th>ID</th>
             <th>Code</th>
             <th>Name</th>
+            <th>Credits</th>
             <th>Status</th>
             <th>Exams</th>
             <th>Actions</th>
@@ -24,6 +25,7 @@
             <td>{{ course.id }}</td>
             <td>{{ course.code }}</td>
             <td>{{ course.name }}</td>
+            <td>{{ course.credits }}</td>
             <td>{{ course.status }}</td>
             <td>{{ course.exams|length }}</td>
             <td>
@@ -35,7 +37,7 @@
         </tr>
         {% else %}
         <tr>
-            <td colspan="6" class="text-center text-muted">No courses yet. Click "Add course" to create one.</td>
+            <td colspan="7" class="text-center text-muted">No courses yet. Click "Add course" to create one.</td>
         </tr>
         {% endfor %}
     </tbody>
