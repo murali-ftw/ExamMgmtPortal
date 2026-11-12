@@ -1,0 +1,28 @@
+{# Admin: add or edit one rubric criterion of an exam (rubric is None when adding) #}
+{% extends "base.html" %}
+{% block title %}{% if rubric %}Edit criterion{% else %}Add criterion{% endif %}{% endblock %}
+{% block content %}
+<h2>{% if rubric %}Edit criterion{% else %}Add criterion{% endif %}</h2>
+<p class="text-muted">Exam: {{ exam.name }} (maximum marks {{ exam.max_marks }})</p>
+
+<form method="post" class="col-md-6">
+    <div class="mb-3">
+        <label class="form-label">Criterion name</label>
+        <input type="text" name="criterion_name" class="form-control" value="{{ form.get('criterion_name', '') }}" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Maximum marks</label>
+        <input type="number" name="max_marks" class="form-control" min="1" value="{{ form.get('max_marks', '') }}" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Weightage (%)</label>
+        <input type="number" name="weightage" class="form-control" min="0" step="0.01" value="{{ form.get('weightage', '') }}" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Description</label>
+        <textarea name="description" class="form-control" rows="3">{{ form.get('description', '') }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a class="btn btn-secondary" href="{{ url_for('admin_exams.exam_detail', exam_id=exam.id) }}">Cancel</a>
+</form>
+{% endblock %}

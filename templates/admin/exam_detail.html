@@ -64,4 +64,87 @@
         {% endfor %}
     </tbody>
 </table>
+
+<div class="d-flex justify-content-between align-items-center mt-4 mb-2">
+    <h4>Rubric</h4>
+    <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin_rubrics.add_rubric', exam_id=exam.id) }}">Add criterion</a>
+</div>
+{% if exam.rubrics and total_rubric_marks != exam.max_marks %}
+<div class="alert alert-warning">Rubric marks add up to {{ total_rubric_marks }}, but the exam maximum is {{ exam.max_marks }}.</div>
+{% endif %}
+<table class="table table-bordered">
+    <thead class="table-light">
+        <tr>
+            <th>Criterion</th>
+            <th>Max marks</th>
+            <th>Weightage %</th>
+            <th>Description</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for rubric in exam.rubrics %}
+        <tr>
+            <td>{{ rubric.criterion_name }}</td>
+            <td>{{ rubric.max_marks }}</td>
+            <td>{{ rubric.weightage }}</td>
+            <td>{{ rubric.description or "" }}</td>
+            <td>
+                <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('admin_rubrics.edit_rubric', exam_id=exam.id, rubric_id=rubric.id) }}">Edit</a>
+                <form method="post" action="{{ url_for('admin_rubrics.delete_rubric', exam_id=exam.id, rubric_id=rubric.id) }}" class="d-inline">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="5" class="text-center text-muted">No criteria yet.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h4 class="mt-4">Assigned examiners</h4>
+<table class="table table-bordered">
+    <thead class="table-light">
+        <tr>
+            <th>Name</th>
+            <th>Department</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for assignment in exam.assignments %}
+        <tr>
+            <td>{{ assignment.examiner.name }}</td>
+            <td>{{ assignment.examiner.department or "" }}</td>
+            <td>{{ assignment.examiner.status }}</td>
+            <td>
+                <form method="post" action="{{ url_for('admin_exam_examiners.remove_examiner', exam_id=exam.id, assignment_id=assignment.id) }}">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="4" class="text-center text-muted">No examiners assigned yet.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<form method="post" action="{{ url_for('admin_exam_examiners.assign_examiner', exam_id=exam.id) }}" class="row g-2 mb-4">
+    <div class="col-auto">
+        <select name="examiner_id" class="form-select" required>
+            <option value="">-- choose an active examiner --</option>
+            {% for examiner in free_examiners %}
+            <option value="{{ examiner.id }}">{{ examiner.name }} ({{ examiner.department or "no department" }})</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-primary">Assign</button>
+    </div>
+</form>
 {% endblock %}

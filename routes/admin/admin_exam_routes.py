@@ -4,7 +4,7 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 from database import db
 from helpers.auth_helpers import role_required
 from helpers.form_helpers import parse_date, to_int
-from models import EXAM_TYPES, Course, Exam, Slot
+from models import EXAM_TYPES, Course, Exam, Slot, User
 from rules.exam_status_rules import get_actions_for
 
 bp = Blueprint("admin_exams", __name__, url_prefix="/admin/exams")
@@ -142,7 +142,23 @@ def delete_exam(exam_id):
 @bp.route("/<int:exam_id>")
 @role_required("admin")
 def exam_detail(exam_id):
-    # Show one exam with its timeline, status buttons and slots
+    # Show one exam with its timeline, status buttons, slots, rubric and examiners
     exam = db.get_or_404(Exam, exam_id)
     slots = Slot.query.filter_by(exam_id=exam.id).order_by(Slot.date, Slot.start_time).all()
-    return render_template("admin/exam_detail.html", exam=exam, slots=slots, actions=get_actions_for(exam))
+
+    # Active examiners who are not assigned to this exam yet (for the Assign dropdown)
+    assigned_ids = []
+    for assignment in exam.assignments:
+        assigned_ids.append(assignment.examiner_id)
+    free_examiners = []
+    for examiner in User.query.filter_by(role="examiner", status="active").order_by(User.name).all():
+        if examiner.id not in assigned_ids:
+            free_examiners.append(examiner)
+
+    # Add up the rubric marks to compare with the exam's maximum marks
+    total_rubric_marks = 0
+    for rubric in exam.rubrics:
+        total_rubric_marks = total_rubric_marks + rubric.max_marks
+
+    return render_template("admin/exam_detail.html", exam=exam, slots=slots, actions=get_actions_for(exam),
+                           free_examiners=free_examiners, total_rubric_marks=total_rubric_marks)

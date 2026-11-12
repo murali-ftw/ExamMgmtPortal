@@ -1,0 +1,31 @@
+{# Admin: create an examiner account (active straight away) #}
+{% extends "base.html" %}
+{% block title %}Add examiner{% endblock %}
+{% block content %}
+<h2 class="mb-3">Add examiner</h2>
+
+<form method="post" class="col-md-6">
+    <div class="mb-3">
+        <label class="form-label">Name</label>
+        <input type="text" name="name" class="form-control" value="{{ form.get('name', '') }}" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" name="email" class="form-control" value="{{ form.get('email', '') }}" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Department</label>
+        <input type="text" name="department" class="form-control" value="{{ form.get('department', '') }}">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Contact</label>
+        <input type="text" name="contact" class="form-control" value="{{ form.get('contact', '') }}">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Password (at least 6 characters)</label>
+        <input type="password" name="password" class="form-control" minlength="6" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a class="btn btn-secondary" href="{{ url_for('admin_examiners.list_examiners') }}">Cancel</a>
+</form>
+{% endblock %}
