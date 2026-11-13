@@ -69,9 +69,6 @@
     <h4>Rubric</h4>
     <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin_rubrics.add_rubric', exam_id=exam.id) }}">Add criterion</a>
 </div>
-{% if exam.rubrics and total_rubric_marks != exam.max_marks %}
-<div class="alert alert-warning">Rubric marks add up to {{ total_rubric_marks }}, but the exam maximum is {{ exam.max_marks }}.</div>
-{% endif %}
 <table class="table table-bordered">
     <thead class="table-light">
         <tr>

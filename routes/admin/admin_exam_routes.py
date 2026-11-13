@@ -155,10 +155,5 @@ def exam_detail(exam_id):
         if examiner.id not in assigned_ids:
             free_examiners.append(examiner)
 
-    # Add up the rubric marks to compare with the exam's maximum marks
-    total_rubric_marks = 0
-    for rubric in exam.rubrics:
-        total_rubric_marks = total_rubric_marks + rubric.max_marks
-
     return render_template("admin/exam_detail.html", exam=exam, slots=slots, actions=get_actions_for(exam),
-                           free_examiners=free_examiners, total_rubric_marks=total_rubric_marks)
+                           free_examiners=free_examiners)
