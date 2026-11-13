@@ -1,7 +1,46 @@
-{# Examiner dashboard (placeholder; real content comes later) #}
+{# Examiner dashboard: four cards with my counts, each linking to its page #}
 {% extends "base.html" %}
 {% block title %}Examiner Dashboard{% endblock %}
 {% block content %}
 <h2>Examiner Dashboard</h2>
 <p>Welcome, {{ current_user.name }}</p>
+
+<div class="row g-3">
+    <div class="col-6 col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-6">{{ counts.assigned }}</div>
+                <div class="text-muted">Assigned examinations</div>
+                <a href="{{ url_for('examiner_exams.my_exams') }}">My exams</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-6">{{ counts.slots }}</div>
+                <div class="text-muted">Created slots</div>
+                <a href="{{ url_for('examiner_slots.my_slots') }}">My slots</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-6">{{ counts.students_booked }}</div>
+                <div class="text-muted">Students booked</div>
+                <a href="{{ url_for('examiner_evaluations.my_evaluations') }}">Evaluations</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-6">{{ counts.pending }}</div>
+                <div class="text-muted">Pending evaluations</div>
+                <a href="{{ url_for('examiner_evaluations.my_evaluations') }}">Evaluations</a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

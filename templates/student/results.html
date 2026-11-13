@@ -1,0 +1,35 @@
+{# Student: my published results (only exams marked Completed) #}
+{% extends "base.html" %}
+{% block title %}My Results{% endblock %}
+{% block content %}
+<h2 class="mb-3">My Results</h2>
+
+<table class="table table-bordered table-hover">
+    <thead class="table-light">
+        <tr>
+            <th>Exam</th>
+            <th>Course</th>
+            <th>Date</th>
+            <th>Total marks</th>
+            <th>Exam max marks</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for booking in bookings %}
+        <tr>
+            <td>{{ booking.slot.exam.name }}</td>
+            <td>{{ booking.slot.exam.course.code }} - {{ booking.slot.exam.course.name }}</td>
+            <td>{{ booking.slot.date }}</td>
+            <td>{{ booking.evaluation.total_marks }}</td>
+            <td>{{ booking.slot.exam.max_marks }}</td>
+            <td><a class="btn btn-sm btn-outline-primary" href="{{ url_for('student_results.result_detail', booking_id=booking.id) }}">View</a></td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="6" class="text-center text-muted">No results are published yet. Results appear after the admin completes the exam.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

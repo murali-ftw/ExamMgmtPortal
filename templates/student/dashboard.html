@@ -1,7 +1,55 @@
-{# Student dashboard (placeholder; real content comes later) #}
+{# Student dashboard: five cards with my counts, each linking to its page #}
 {% extends "base.html" %}
 {% block title %}Student Dashboard{% endblock %}
 {% block content %}
 <h2>Student Dashboard</h2>
 <p>Welcome, {{ current_user.name }}</p>
+
+<div class="row g-3">
+    <div class="col-6 col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-6">{{ counts.open_exams }}</div>
+                <div class="text-muted">Available examinations</div>
+                <a href="{{ url_for('student_exams.browse_exams') }}">View exams</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-6">{{ counts.available_slots }}</div>
+                <div class="text-muted">Available slots</div>
+                <a href="{{ url_for('student_exams.browse_exams') }}">View exams</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-6">{{ counts.upcoming }}</div>
+                <div class="text-muted">Upcoming examinations</div>
+                <a href="{{ url_for('student_bookings.my_bookings') }}">My bookings</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-6">{{ counts.booked }}</div>
+                <div class="text-muted">Booked slots</div>
+                <a href="{{ url_for('student_bookings.my_bookings') }}">My bookings</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-6">{{ counts.results }}</div>
+                <div class="text-muted">Published results</div>
+                <a href="{{ url_for('student_results.my_results') }}">My results</a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

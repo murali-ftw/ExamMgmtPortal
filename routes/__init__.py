@@ -18,6 +18,7 @@ from routes.student.student_dashboard_routes import bp as student_dashboard_bp
 from routes.student.student_exam_routes import bp as student_exams_bp
 from routes.student.student_booking_routes import bp as student_bookings_bp
 from routes.student.student_profile_routes import bp as student_profile_bp
+from routes.student.student_result_routes import bp as student_results_bp
 
 ALL_BLUEPRINTS = [
     login_bp,
@@ -38,6 +39,7 @@ ALL_BLUEPRINTS = [
     student_exams_bp,
     student_bookings_bp,
     student_profile_bp,
+    student_results_bp,
 ]
 
 
