@@ -1,0 +1,55 @@
+{# Student: all my bookings (history) with a Cancel button while cancelling is allowed #}
+{% extends "base.html" %}
+{% block title %}My Bookings{% endblock %}
+{% block content %}
+{# Badge colour for each booking status #}
+{% set status_colors = {"Booked": "primary", "Cancelled": "secondary", "Completed": "success"} %}
+
+<h2>My Bookings</h2>
+<p class="text-muted">Your full booking history. Upcoming exams are the bookings with status <strong>Booked</strong>.</p>
+
+<table class="table table-bordered table-hover">
+    <thead class="table-light">
+        <tr>
+            <th>ID</th>
+            <th>Exam</th>
+            <th>Course</th>
+            <th>Type</th>
+            <th>Date</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Examiner</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in rows %}
+        <tr>
+            <td>{{ row.booking.id }}</td>
+            <td>{{ row.booking.slot.exam.name }}</td>
+            <td>{{ row.booking.slot.exam.course.code }} - {{ row.booking.slot.exam.course.name }}</td>
+            <td>{{ row.booking.slot.exam.exam_type }}</td>
+            <td>{{ row.booking.slot.date }}</td>
+            <td>{{ row.booking.slot.start_time.strftime('%H:%M') }}</td>
+            <td>{{ row.booking.slot.end_time.strftime('%H:%M') }}</td>
+            <td>{{ row.booking.slot.examiner.name }}</td>
+            <td><span class="badge bg-{{ status_colors[row.booking.status] }}">{{ row.booking.status }}</span></td>
+            <td>
+                {% if row.can_cancel %}
+                <form method="post" action="{{ url_for('student_bookings.cancel_booking', booking_id=row.booking.id) }}">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Cancel</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="10" class="text-center text-muted">
+                You have no bookings yet. <a href="{{ url_for('student_exams.browse_exams') }}">Browse open exams</a>.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

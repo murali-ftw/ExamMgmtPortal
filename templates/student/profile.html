@@ -1,0 +1,33 @@
+{# Student: edit my profile; email and roll number are shown but cannot be changed #}
+{% extends "base.html" %}
+{% block title %}My Profile{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h2 class="mb-3">My Profile</h2>
+        <form method="post">
+            <div class="mb-3">
+                <label class="form-label">Email (cannot be changed)</label>
+                <input type="email" class="form-control" value="{{ student.email }}" disabled>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Roll number</label>
+                <input type="text" class="form-control" value="{{ student.roll_no or '' }}" disabled>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Name</label>
+                <input type="text" name="name" class="form-control" value="{{ form.get('name', '') }}" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Department</label>
+                <input type="text" name="department" class="form-control" value="{{ form.get('department', '') }}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Contact</label>
+                <input type="text" name="contact" class="form-control" value="{{ form.get('contact', '') }}">
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

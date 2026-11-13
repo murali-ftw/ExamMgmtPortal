@@ -1,10 +1,10 @@
-# Student action to book a seat in a slot (POST only; the rules decide if it is allowed).
-from flask import Blueprint, flash, redirect, url_for
+# Student booking actions: book a slot, see my bookings, cancel a booking (rules decide).
+from flask import Blueprint, abort, flash, redirect, render_template, url_for
 
 from database import db
 from helpers.auth_helpers import get_current_user, role_required
 from models import Booking, Slot
-from rules.booking_rules import can_book, refresh_slot_status
+from rules.booking_rules import can_book, can_cancel, refresh_slot_status
 
 bp = Blueprint("student_bookings", __name__, url_prefix="/student/bookings")
 
@@ -30,3 +30,41 @@ def book_slot(slot_id):
 
     flash("Slot booked.", "success")
     return redirect(back_to_slots)
+
+
+@bp.route("/")
+@role_required("student")
+def my_bookings():
+    # All my bookings (history), newest first, each with can_cancel's (ok, reason)
+    student = get_current_user()
+    bookings = (Booking.query.filter_by(student_id=student.id)
+                .order_by(Booking.booking_date.desc(), Booking.id.desc()).all())
+
+    rows = []
+    for booking in bookings:
+        ok, reason = can_cancel(booking)
+        rows.append({"booking": booking, "can_cancel": ok})
+
+    return render_template("student/bookings.html", rows=rows)
+
+
+@bp.route("/<int:booking_id>/cancel", methods=["POST"])
+@role_required("student")
+def cancel_booking(booking_id):
+    # Cancel my own booking if the rules allow it; the row is kept as history
+    student = get_current_user()
+    booking = db.get_or_404(Booking, booking_id)
+    if booking.student_id != student.id:
+        abort(404)
+
+    ok, reason = can_cancel(booking)
+    if not ok:
+        flash(reason, "danger")
+        return redirect(url_for("student_bookings.my_bookings"))
+
+    booking.status = "Cancelled"
+    refresh_slot_status(booking.slot)
+    db.session.commit()
+
+    flash("Booking cancelled.", "success")
+    return redirect(url_for("student_bookings.my_bookings"))
