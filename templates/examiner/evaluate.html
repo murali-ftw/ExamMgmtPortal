@@ -1,0 +1,53 @@
+{# Examiner: rubric form for one booking, or the submitted evaluation shown read-only #}
+{% extends "base.html" %}
+{% block title %}Evaluate{% endblock %}
+{% block content %}
+<a href="{{ url_for('examiner_evaluations.my_evaluations') }}">&larr; Back to evaluations</a>
+
+<h2 class="mt-2">{{ booking.student.name }}</h2>
+<p class="text-muted">
+    {{ booking.slot.exam.name }} &middot; {{ booking.slot.date }}
+    &middot; {{ booking.slot.start_time.strftime('%H:%M') }} - {{ booking.slot.end_time.strftime('%H:%M') }}
+</p>
+
+{% if evaluation %}
+<div class="alert alert-success">Evaluated on {{ evaluation.evaluated_on.strftime('%Y-%m-%d %H:%M') }}. Marks cannot be changed.</div>
+<table class="table table-bordered">
+    <thead class="table-light">
+        <tr>
+            <th>Criterion</th>
+            <th>Marks</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for score in evaluation.scores %}
+        <tr>
+            <td>{{ score.rubric.criterion_name }}</td>
+            <td>{{ score.marks }} / {{ score.rubric.max_marks }}</td>
+        </tr>
+        {% endfor %}
+        <tr class="fw-bold">
+            <td>Total</td>
+            <td>{{ evaluation.total_marks }}</td>
+        </tr>
+    </tbody>
+</table>
+<p><strong>Remarks:</strong> {{ evaluation.remarks }}</p>
+
+{% else %}
+<form method="post">
+    {% for rubric in rubrics %}
+    <div class="mb-3">
+        <label class="form-label">{{ rubric.criterion_name }} (out of {{ rubric.max_marks }})</label>
+        <input type="number" name="marks_{{ rubric.id }}" class="form-control" min="0" max="{{ rubric.max_marks }}" step="0.5"
+               value="{{ form.get('marks_' ~ rubric.id, '') }}" required>
+    </div>
+    {% endfor %}
+    <div class="mb-3">
+        <label class="form-label">Remarks</label>
+        <textarea name="remarks" class="form-control" rows="3" required>{{ form.get('remarks', '') }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit marks</button>
+</form>
+{% endif %}
+{% endblock %}

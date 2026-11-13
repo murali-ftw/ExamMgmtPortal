@@ -1,0 +1,45 @@
+{# Examiner: all students in my slots, pending evaluations first #}
+{% extends "base.html" %}
+{% block title %}Evaluations{% endblock %}
+{% block content %}
+<h2 class="mb-3">My Evaluations</h2>
+
+<table class="table table-bordered table-hover">
+    <thead class="table-light">
+        <tr>
+            <th>Student</th>
+            <th>Exam</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Evaluation</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for booking in bookings %}
+        <tr>
+            <td>{{ booking.student.name }}</td>
+            <td>{{ booking.slot.exam.name }}</td>
+            <td>{{ booking.slot.date }}</td>
+            <td>{{ booking.slot.start_time.strftime('%H:%M') }} - {{ booking.slot.end_time.strftime('%H:%M') }}</td>
+            <td>
+                {% if booking.evaluation %}
+                <span class="badge bg-success">Evaluated</span> Total: {{ booking.evaluation.total_marks }}
+                {% else %}
+                <span class="badge bg-warning text-dark">Pending</span>
+                {% endif %}
+            </td>
+            <td>
+                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('examiner_evaluations.evaluate', booking_id=booking.id) }}">
+                    {% if booking.evaluation %}View{% else %}Evaluate{% endif %}
+                </a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="6" class="text-center text-muted">No students have booked your slots yet.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

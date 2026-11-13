@@ -44,6 +44,7 @@
             <td>{{ slot.booked_count }}</td>
             <td>{{ slot.status }}</td>
             <td>
+                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('examiner_students.slot_students', slot_id=slot.id) }}">Students</a>
                 {% if slot_can_be_edited(slot) %}
                 <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('examiner_slots.edit_slot', slot_id=slot.id) }}">Edit</a>
                 <form method="post" action="{{ url_for('examiner_slots.delete_slot', slot_id=slot.id) }}" class="d-inline">
