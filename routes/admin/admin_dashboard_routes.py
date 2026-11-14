@@ -19,4 +19,13 @@ def dashboard():
         "slots": Slot.query.count(),
         "bookings": Booking.query.count(),  # includes cancelled bookings (history)
     }
-    return render_template("admin/dashboard.html", counts=counts)
+
+    # Bookings per exam: add up the Booked + Completed seats of every slot (slot.booked_count skips Cancelled)
+    exam_rows = []
+    for exam in Exam.query.order_by(Exam.name).all():
+        booking_count = 0
+        for slot in exam.slots:
+            booking_count = booking_count + slot.booked_count
+        exam_rows.append({"exam": exam, "course_name": exam.course.name, "booking_count": booking_count})
+
+    return render_template("admin/dashboard.html", counts=counts, exam_rows=exam_rows)

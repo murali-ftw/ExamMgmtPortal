@@ -55,4 +55,33 @@
         </div>
     </div>
 </div>
+
+{# Bookings per examination: Booked + Completed only (Cancelled not counted) #}
+{% set status_colors = {"Draft": "secondary", "Slot Creation": "info", "Booking Open": "success",
+                        "Closed": "warning", "Completed": "dark"} %}
+<h4 class="mt-4">Bookings per examination</h4>
+<table class="table table-bordered table-hover">
+    <thead class="table-light">
+        <tr>
+            <th>Exam</th>
+            <th>Course</th>
+            <th>Status</th>
+            <th>Bookings</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in exam_rows %}
+        <tr>
+            <td>{{ row.exam.name }}</td>
+            <td>{{ row.course_name }}</td>
+            <td><span class="badge bg-{{ status_colors[row.exam.status] }}">{{ row.exam.status }}</span></td>
+            <td>{{ row.booking_count }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="4" class="text-center text-muted">No examinations yet.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}
