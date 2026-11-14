@@ -9,6 +9,9 @@ from routes.admin.admin_exam_status_routes import bp as admin_exam_status_bp
 from routes.admin.admin_rubric_routes import bp as admin_rubrics_bp
 from routes.admin.admin_examiner_routes import bp as admin_examiners_bp
 from routes.admin.admin_exam_examiner_routes import bp as admin_exam_examiners_bp
+from routes.admin.admin_student_routes import bp as admin_students_bp
+from routes.admin.admin_slot_routes import bp as admin_slots_bp
+from routes.admin.admin_booking_routes import bp as admin_bookings_bp
 from routes.examiner.examiner_dashboard_routes import bp as examiner_dashboard_bp
 from routes.examiner.examiner_exam_routes import bp as examiner_exams_bp
 from routes.examiner.examiner_slot_routes import bp as examiner_slots_bp
@@ -30,6 +33,9 @@ ALL_BLUEPRINTS = [
     admin_rubrics_bp,
     admin_examiners_bp,
     admin_exam_examiners_bp,
+    admin_students_bp,
+    admin_slots_bp,
+    admin_bookings_bp,
     examiner_dashboard_bp,
     examiner_exams_bp,
     examiner_slots_bp,

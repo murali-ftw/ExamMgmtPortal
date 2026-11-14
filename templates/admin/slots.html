@@ -1,0 +1,46 @@
+{# Admin: all slots of all examiners and exams, newest date first (read-only) #}
+{% extends "base.html" %}
+{% block title %}Slots{% endblock %}
+{% block content %}
+{# Badge colour for each slot status #}
+{% set status_colors = {"Available": "success", "Full": "warning", "Cancelled": "secondary", "Completed": "dark"} %}
+
+<h2 class="mb-3">All Slots</h2>
+
+<table class="table table-bordered table-hover">
+    <thead class="table-light">
+        <tr>
+            <th>ID</th>
+            <th>Exam</th>
+            <th>Examiner</th>
+            <th>Date</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Capacity</th>
+            <th>Booked</th>
+            <th>Available</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for slot in slots %}
+        <tr>
+            <td>{{ slot.id }}</td>
+            <td>{{ slot.exam.name }}</td>
+            <td>{{ slot.examiner.name }}</td>
+            <td>{{ slot.date }}</td>
+            <td>{{ slot.start_time.strftime('%H:%M') }}</td>
+            <td>{{ slot.end_time.strftime('%H:%M') }}</td>
+            <td>{{ slot.capacity }}</td>
+            <td>{{ slot.booked_count }}</td>
+            <td>{{ slot.available_seats }}</td>
+            <td><span class="badge bg-{{ status_colors[slot.status] }}">{{ slot.status }}</span></td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="10" class="text-center text-muted">No slots found. Examiners have not created any slots yet.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

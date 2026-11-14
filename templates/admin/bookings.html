@@ -1,0 +1,54 @@
+{# Admin: all bookings of every status (complete history) with a search (read-only) #}
+{% extends "base.html" %}
+{% block title %}Bookings{% endblock %}
+{% block content %}
+{# Badge colour for each booking status #}
+{% set status_colors = {"Booked": "primary", "Cancelled": "secondary", "Completed": "success"} %}
+
+<h2>All Bookings</h2>
+<p class="text-muted">Complete booking history: Booked, Cancelled and Completed bookings, newest first.</p>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Booking ID, student ID, name or exam">
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-secondary">Search</button>
+    </div>
+</form>
+
+<table class="table table-bordered table-hover">
+    <thead class="table-light">
+        <tr>
+            <th>ID</th>
+            <th>Student</th>
+            <th>Exam</th>
+            <th>Course</th>
+            <th>Slot date</th>
+            <th>Slot time</th>
+            <th>Examiner</th>
+            <th>Booked on</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for booking in bookings %}
+        <tr>
+            <td>{{ booking.id }}</td>
+            <td>{{ booking.student.name }} <span class="small text-muted">(ID {{ booking.student_id }})</span></td>
+            <td>{{ booking.slot.exam.name }}</td>
+            <td>{{ booking.slot.exam.course.code }} - {{ booking.slot.exam.course.name }}</td>
+            <td>{{ booking.slot.date }}</td>
+            <td>{{ booking.slot.start_time.strftime('%H:%M') }} - {{ booking.slot.end_time.strftime('%H:%M') }}</td>
+            <td>{{ booking.slot.examiner.name }}</td>
+            <td>{{ booking.booking_date.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td><span class="badge bg-{{ status_colors[booking.status] }}">{{ booking.status }}</span></td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="9" class="text-center text-muted">No bookings found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

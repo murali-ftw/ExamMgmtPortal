@@ -1,0 +1,46 @@
+{# Admin: list of all students with a search by name, email or ID (read-only) #}
+{% extends "base.html" %}
+{% block title %}Students{% endblock %}
+{% block content %}
+<h2 class="mb-3">Students</h2>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Name, email or ID">
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-secondary">Search</button>
+    </div>
+</form>
+
+<table class="table table-bordered table-hover">
+    <thead class="table-light">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Roll no</th>
+            <th>Contact</th>
+            <th>Status</th>
+            <th>Bookings</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in rows %}
+        <tr>
+            <td>{{ row.student.id }}</td>
+            <td>{{ row.student.name }}</td>
+            <td>{{ row.student.email }}</td>
+            <td>{{ row.student.roll_no or "" }}</td>
+            <td>{{ row.student.contact or "" }}</td>
+            <td>{{ row.student.status }}</td>
+            <td>{{ row.booking_count }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="7" class="text-center text-muted">No students found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
