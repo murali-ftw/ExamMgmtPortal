@@ -7,5 +7,6 @@ def read_search(text):
     clean_text = (text or "").strip()
     id_number = None
     if clean_text.isdigit():
+        # to_int gives None above 2147483647, so a huge number is searched as plain text only
         id_number = to_int(clean_text)
     return clean_text, id_number

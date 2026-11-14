@@ -3,11 +3,14 @@ from datetime import datetime
 
 
 def to_int(text):
-    # "5" -> 5
+    # "5" -> 5; a huge number is treated as invalid (SQLite cannot store it, and no real value is that big)
     try:
-        return int(text)
+        number = int(text)
     except (ValueError, TypeError):
         return None
+    if number > 2147483647 or number < -2147483647:
+        return None
+    return number
 
 
 def to_float(text):

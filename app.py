@@ -1,5 +1,6 @@
 # Start the app here: python app.py
 from flask import Flask
+from werkzeug.exceptions import NotFound
 
 from database import db
 from database_setup import setup_database
@@ -24,6 +25,11 @@ def create_app():
             "slot_creation_open": slot_creation_open,
             "slot_can_be_edited": slot_can_be_edited,
         }
+
+    @app.errorhandler(OverflowError)
+    def number_too_big(error):
+        # A huge id in the URL (too big for SQLite) cannot exist, so show the normal "Not Found" page
+        return NotFound()
 
     setup_database(app)
     return app
