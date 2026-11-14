@@ -1,5 +1,5 @@
 # Student pages to browse exams that are open for booking and see their slots.
-from flask import Blueprint, render_template, request
+from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from database import db
 from helpers.auth_helpers import get_current_user, role_required
@@ -45,6 +45,12 @@ def exam_slots(exam_id):
     # One exam with its slots; each slot gets (ok, reason) from can_book
     student = get_current_user()
     exam = db.get_or_404(Exam, exam_id)
+
+    # Slots are shown only while booking is open (same rule as the exam list)
+    if not booking_open(exam):
+        flash("Booking is not open for this exam.", "warning")
+        return redirect(url_for("student_exams.browse_exams"))
+
     slots = (Slot.query.filter(Slot.exam_id == exam.id, Slot.status != "Cancelled")
              .order_by(Slot.date, Slot.start_time).all())
 

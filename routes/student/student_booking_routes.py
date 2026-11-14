@@ -5,6 +5,7 @@ from database import db
 from helpers.auth_helpers import get_current_user, role_required
 from models import Booking, Slot
 from rules.booking_rules import can_book, can_cancel, refresh_slot_status
+from rules.window_rules import booking_open
 
 bp = Blueprint("student_bookings", __name__, url_prefix="/student/bookings")
 
@@ -20,6 +21,9 @@ def book_slot(slot_id):
     ok, reason = can_book(student, slot)
     if not ok:
         flash(reason, "danger")
+        # When booking is closed the slots page is hidden, so go to the exam list (avoids a second message)
+        if not booking_open(slot.exam):
+            return redirect(url_for("student_exams.browse_exams"))
         return redirect(back_to_slots)
 
     # slot=slot also adds the booking to slot.bookings, so the seat count sees it
