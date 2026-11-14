@@ -1,4 +1,4 @@
-{# Admin: all bookings of every status (complete history) with a search (read-only) #}
+{# Admin: all bookings of every status (complete history) with a search and a Reschedule link on Booked rows #}
 {% extends "base.html" %}
 {% block title %}Bookings{% endblock %}
 {% block content %}
@@ -29,6 +29,7 @@
             <th>Examiner</th>
             <th>Booked on</th>
             <th>Status</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -43,10 +44,15 @@
             <td>{{ booking.slot.examiner.name }}</td>
             <td>{{ booking.booking_date.strftime('%Y-%m-%d %H:%M') }}</td>
             <td><span class="badge bg-{{ status_colors[booking.status] }}">{{ booking.status }}</span></td>
+            <td>
+                {% if booking.status == "Booked" %}
+                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin_bookings.reschedule_booking', booking_id=booking.id) }}">Reschedule</a>
+                {% endif %}
+            </td>
         </tr>
         {% else %}
         <tr>
-            <td colspan="9" class="text-center text-muted">No bookings found.</td>
+            <td colspan="10" class="text-center text-muted">No bookings found.</td>
         </tr>
         {% endfor %}
     </tbody>

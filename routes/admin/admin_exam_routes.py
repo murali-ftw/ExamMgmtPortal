@@ -1,9 +1,11 @@
 # Admin pages to list, add, edit, delete and view examinations.
 from flask import Blueprint, flash, redirect, render_template, request, url_for
+from sqlalchemy import or_
 
 from database import db
 from helpers.auth_helpers import role_required
 from helpers.form_helpers import parse_date, to_int
+from helpers.search_helpers import read_search
 from models import EXAM_TYPES, Course, Exam, Slot, User
 from rules.exam_status_rules import get_actions_for
 
@@ -60,9 +62,22 @@ def copy_data_to_exam(exam, data):
 @bp.route("/")
 @role_required("admin")
 def list_exams():
-    # Show all exams, newest first
-    exams = Exam.query.order_by(Exam.id.desc()).all()
-    return render_template("admin/exams.html", exams=exams)
+    # Show all exams, newest first; ?q= matches the exact exam ID (if a number) or part of the exam or course name
+    q, id_number = read_search(request.args.get("q", ""))
+
+    # Join the course table so we can search on the course name
+    query = Exam.query.join(Exam.course)
+
+    if q:
+        pattern = "%" + q + "%"
+        text_match = or_(Exam.name.ilike(pattern), Course.name.ilike(pattern))
+        if id_number is not None:
+            query = query.filter(or_(Exam.id == id_number, text_match))
+        else:
+            query = query.filter(text_match)
+
+    exams = query.order_by(Exam.id.desc()).all()
+    return render_template("admin/exams.html", exams=exams, q=q)
 
 
 @bp.route("/add", methods=["GET", "POST"])

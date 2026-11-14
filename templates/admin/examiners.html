@@ -1,4 +1,4 @@
-{# Admin: list of examiners with a status filter and one status button per row #}
+{# Admin: list of examiners with a search, a status filter and one status button per row #}
 {% extends "base.html" %}
 {% block title %}Examiners{% endblock %}
 {% block content %}
@@ -8,6 +8,9 @@
 </div>
 
 <form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Name, email, department or ID">
+    </div>
     <div class="col-auto">
         <select name="status" class="form-select">
             <option value="">All statuses</option>

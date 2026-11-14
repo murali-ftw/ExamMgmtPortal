@@ -1,4 +1,4 @@
-{# Admin: all slots of all examiners and exams, newest date first (read-only) #}
+{# Admin: all slots of all examiners and exams, newest date first, with a Change examiner link #}
 {% extends "base.html" %}
 {% block title %}Slots{% endblock %}
 {% block content %}
@@ -20,6 +20,7 @@
             <th>Booked</th>
             <th>Available</th>
             <th>Status</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -35,10 +36,15 @@
             <td>{{ slot.booked_count }}</td>
             <td>{{ slot.available_seats }}</td>
             <td><span class="badge bg-{{ status_colors[slot.status] }}">{{ slot.status }}</span></td>
+            <td>
+                {% if slot.status != "Cancelled" and slot.status != "Completed" %}
+                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin_slots.change_examiner', slot_id=slot.id) }}">Change examiner</a>
+                {% endif %}
+            </td>
         </tr>
         {% else %}
         <tr>
-            <td colspan="10" class="text-center text-muted">No slots found. Examiners have not created any slots yet.</td>
+            <td colspan="11" class="text-center text-muted">No slots found. Examiners have not created any slots yet.</td>
         </tr>
         {% endfor %}
     </tbody>

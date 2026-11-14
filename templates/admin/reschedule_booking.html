@@ -1,0 +1,40 @@
+{# Admin: move one Booked booking to another slot of the same exam #}
+{% extends "base.html" %}
+{% block title %}Reschedule Booking{% endblock %}
+{% block content %}
+<h2 class="mb-3">Reschedule booking {{ booking.id }}</h2>
+
+<table class="table table-bordered w-auto">
+    <tr><th>Student</th><td>{{ booking.student.name }} (ID {{ booking.student_id }})</td></tr>
+    <tr><th>Exam</th><td>{{ booking.slot.exam.name }} ({{ booking.slot.exam.course.code }})</td></tr>
+    <tr><th>Exam status</th><td>{{ booking.slot.exam.status }}</td></tr>
+    <tr><th>Current slot</th>
+        <td>{{ booking.slot.date }} {{ booking.slot.start_time.strftime('%H:%M') }} - {{ booking.slot.end_time.strftime('%H:%M') }}
+            with {{ booking.slot.examiner.name }}</td></tr>
+    <tr><th>Status</th><td>{{ booking.status }}</td></tr>
+</table>
+
+{% if slots %}
+<form method="post" class="row g-2 mb-3">
+    <div class="col-auto">
+        <select name="new_slot_id" class="form-select" required>
+            {% for slot in slots %}
+            <option value="{{ slot.id }}">
+                {{ slot.date }} {{ slot.start_time.strftime('%H:%M') }} - {{ slot.end_time.strftime('%H:%M') }}
+                &middot; {{ slot.examiner.name }} &middot; {{ slot.available_seats }} seat(s) free
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Reschedule</button>
+        <a class="btn btn-outline-secondary" href="{{ url_for('admin_bookings.list_bookings') }}">Cancel</a>
+    </div>
+</form>
+{% else %}
+<div class="alert alert-info">
+    There is no other Available slot with a free seat in this exam right now.
+    <a href="{{ url_for('admin_bookings.list_bookings') }}">Back to bookings</a>
+</div>
+{% endif %}
+{% endblock %}

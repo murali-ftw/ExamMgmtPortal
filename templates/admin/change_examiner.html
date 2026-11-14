@@ -1,0 +1,42 @@
+{# Admin: give one slot to another examiner who is assigned to the same exam #}
+{% extends "base.html" %}
+{% block title %}Change Examiner{% endblock %}
+{% block content %}
+<h2 class="mb-3">Change examiner of slot {{ slot.id }}</h2>
+
+<table class="table table-bordered w-auto">
+    <tr><th>Exam</th><td>{{ slot.exam.name }} ({{ slot.exam.course.code }})</td></tr>
+    <tr><th>Date and time</th>
+        <td>{{ slot.date }} {{ slot.start_time.strftime('%H:%M') }} - {{ slot.end_time.strftime('%H:%M') }}</td></tr>
+    <tr><th>Current examiner</th><td>{{ slot.examiner.name }}</td></tr>
+    <tr><th>Booked seats</th><td>{{ slot.booked_count }} of {{ slot.capacity }}</td></tr>
+    <tr><th>Status</th><td>{{ slot.status }}</td></tr>
+</table>
+
+{% if examiners %}
+<form method="post" class="row g-2 mb-3">
+    <div class="col-auto">
+        <select name="examiner_id" class="form-select" required>
+            {% for examiner in examiners %}
+            <option value="{{ examiner.id }}">{{ examiner.name }}{% if examiner.department %} ({{ examiner.department }}){% endif %}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Change examiner</button>
+        <a class="btn btn-outline-secondary" href="{{ url_for('admin_slots.list_slots') }}">Cancel</a>
+    </div>
+</form>
+<p class="small text-muted">The students booked in this slot stay booked; only the examiner changes.</p>
+{% elif slot.status == "Cancelled" or slot.status == "Completed" %}
+<div class="alert alert-info">
+    This slot is {{ slot.status }}, so its examiner cannot be changed.
+    <a href="{{ url_for('admin_slots.list_slots') }}">Back to slots</a>
+</div>
+{% else %}
+<div class="alert alert-info">
+    No other active examiner is assigned to this exam. Assign one on the exam page first.
+    <a href="{{ url_for('admin_slots.list_slots') }}">Back to slots</a>
+</div>
+{% endif %}
+{% endblock %}

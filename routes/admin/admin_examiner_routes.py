@@ -1,8 +1,10 @@
 # Admin pages to list, add, approve, deactivate and activate examiners.
 from flask import Blueprint, flash, redirect, render_template, request, url_for
+from sqlalchemy import or_
 
 from database import db
 from helpers.auth_helpers import role_required
+from helpers.search_helpers import read_search
 from helpers.user_helpers import create_user, email_exists
 from models import User
 
@@ -14,13 +16,23 @@ EXAMINER_STATUSES = ["pending", "active", "inactive"]
 @bp.route("/")
 @role_required("admin")
 def list_examiners():
-    # Show all examiners, optionally only one status (?status=pending)
+    # Show all examiners, optionally one status (?status=pending) AND a search (?q= exact ID or part of name/email/department)
     status = request.args.get("status", "")
+    q, id_number = read_search(request.args.get("q", ""))
     query = User.query.filter_by(role="examiner")
     if status in EXAMINER_STATUSES:
         query = query.filter_by(status=status)
+
+    if q:
+        pattern = "%" + q + "%"
+        text_match = or_(User.name.ilike(pattern), User.email.ilike(pattern), User.department.ilike(pattern))
+        if id_number is not None:
+            query = query.filter(or_(User.id == id_number, text_match))
+        else:
+            query = query.filter(text_match)
+
     examiners = query.order_by(User.name).all()
-    return render_template("admin/examiners.html", examiners=examiners, status=status, statuses=EXAMINER_STATUSES)
+    return render_template("admin/examiners.html", examiners=examiners, status=status, statuses=EXAMINER_STATUSES, q=q)
 
 
 @bp.route("/add", methods=["GET", "POST"])

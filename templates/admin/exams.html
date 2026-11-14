@@ -1,4 +1,4 @@
-{# Admin: list of all examinations #}
+{# Admin: list of all examinations with a search by name, course or ID #}
 {% extends "base.html" %}
 {% block title %}Examinations{% endblock %}
 {% block content %}
@@ -10,6 +10,15 @@
     <h2>Examinations</h2>
     <a class="btn btn-primary" href="{{ url_for('admin_exams.add_exam') }}">Add examination</a>
 </div>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Exam name, course name or ID">
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-secondary">Search</button>
+    </div>
+</form>
 
 <table class="table table-bordered table-hover">
     <thead class="table-light">
@@ -36,7 +45,9 @@
         </tr>
         {% else %}
         <tr>
-            <td colspan="7" class="text-center text-muted">No examinations yet. Click "Add examination" to create one.</td>
+            <td colspan="7" class="text-center text-muted">
+                {% if q %}No examinations found.{% else %}No examinations yet. Click "Add examination" to create one.{% endif %}
+            </td>
         </tr>
         {% endfor %}
     </tbody>
