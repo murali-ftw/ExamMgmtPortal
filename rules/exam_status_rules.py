@@ -30,5 +30,13 @@ def change_exam_status(exam, action):
         return False, "This action is not possible when the exam is " + exam.status + "."
 
     exam.status = new_status
+
+    # A completed exam has finished: its running slots become Completed too (Cancelled slots and bookings stay as they are)
+    if new_status == "Completed":
+        for slot in exam.slots:
+            if slot.status == "Available" or slot.status == "Full":
+                slot.status = "Completed"
+
+    # One commit saves the exam status and the slot statuses together
     db.session.commit()
     return True, message
