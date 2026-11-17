@@ -27,6 +27,7 @@ def home():
 @bp.route("/login", methods=["GET", "POST"])
 def login():
     # Show the login form, and check the email + password when it is sent
+    email = ""
     if request.method == "POST":
         email = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "")
@@ -43,7 +44,8 @@ def login():
             session["user_id"] = user.id
             return redirect(url_for("login.home"))
 
-    return render_template("auth/login.html")
+    # Send the typed email back so the form keeps it after an error (the password is never sent back)
+    return render_template("auth/login.html", email=email)
 
 
 @bp.route("/logout")
