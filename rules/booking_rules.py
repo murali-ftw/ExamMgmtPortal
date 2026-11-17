@@ -19,6 +19,10 @@ def can_book(student, slot):
     if slot.status != "Available":
         return False, "This slot is not available."
 
+    # b2) the slot's examiner must still be active (a deactivated examiner cannot evaluate)
+    if slot.examiner.status != "active":
+        return False, "This slot is not available right now."
+
     # c) the admin must have opened booking and today must be inside the booking dates
     if not booking_open(slot.exam):
         return False, "Booking is not open for this exam."
