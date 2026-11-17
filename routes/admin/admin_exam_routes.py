@@ -7,6 +7,7 @@ from helpers.auth_helpers import role_required
 from helpers.form_helpers import parse_date, to_int
 from helpers.search_helpers import read_search
 from models import EXAM_TYPES, Course, Exam, Slot, User
+from routes.admin.admin_rubric_routes import rubric_total
 from rules.exam_status_rules import get_actions_for
 
 bp = Blueprint("admin_exams", __name__, url_prefix="/admin/exams")
@@ -126,6 +127,10 @@ def edit_exam(exam_id):
 
     if request.method == "POST":
         data, error = read_exam_form(request.form)
+        # The new maximum cannot be lower than the marks the rubric already adds up to
+        if error is None and data["max_marks"] < rubric_total(exam):
+            error = ("Rubric marks add up to " + str(rubric_total(exam)) + ", but the new exam maximum is "
+                     + str(data["max_marks"]) + ".")
         if error:
             flash(error, "danger")
             form = request.form

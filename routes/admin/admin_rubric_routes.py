@@ -26,6 +26,14 @@ def read_rubric_form(form):
     return data, None
 
 
+def rubric_total(exam):
+    # Sum of max_marks of all criteria of this exam (weightage is not used)
+    total = 0
+    for rubric in exam.rubrics:
+        total = total + rubric.max_marks
+    return total
+
+
 def get_rubric_of_exam(exam, rubric_id):
     # Load the rubric, and give 404 if it belongs to a different exam
     rubric = db.get_or_404(Rubric, rubric_id)
@@ -42,6 +50,12 @@ def add_rubric(exam_id):
     form = {"weightage": "0"}
     if request.method == "POST":
         data, error = read_rubric_form(request.form)
+        # The new criterion must not push the rubric total above the exam's maximum marks
+        if error is None:
+            new_total = rubric_total(exam) + data["max_marks"]
+            if new_total > exam.max_marks:
+                error = ("Rubric marks would add up to " + str(new_total) + ", but the exam maximum is "
+                         + str(exam.max_marks) + ".")
         if error:
             flash(error, "danger")
             form = request.form
@@ -67,6 +81,12 @@ def edit_rubric(exam_id, rubric_id):
 
     if request.method == "POST":
         data, error = read_rubric_form(request.form)
+        # Count the NEW value of this criterion instead of its old value
+        if error is None:
+            new_total = rubric_total(exam) - rubric.max_marks + data["max_marks"]
+            if new_total > exam.max_marks:
+                error = ("Rubric marks would add up to " + str(new_total) + ", but the exam maximum is "
+                         + str(exam.max_marks) + ".")
         if error:
             flash(error, "danger")
             form = request.form
