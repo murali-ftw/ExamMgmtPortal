@@ -1,5 +1,5 @@
 # Start the app here: python app.py
-from flask import Flask
+from flask import Flask, request
 from werkzeug.exceptions import NotFound
 
 from database import db
@@ -25,6 +25,13 @@ def create_app():
             "slot_creation_open": slot_creation_open,
             "slot_can_be_edited": slot_can_be_edited,
         }
+
+    @app.after_request
+    def no_cache(response):
+        # Browser must not keep pages (Back after logout shows nothing old); static CSS/JS may still be cached
+        if not request.path.startswith("/static"):
+            response.headers["Cache-Control"] = "no-store"
+        return response
 
     @app.errorhandler(OverflowError)
     def number_too_big(error):
