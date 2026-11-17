@@ -87,6 +87,14 @@ def edit_rubric(exam_id, rubric_id):
             if new_total > exam.max_marks:
                 error = ("Rubric marks would add up to " + str(new_total) + ", but the exam maximum is "
                          + str(exam.max_marks) + ".")
+        # The new max cannot be lower than the highest mark an examiner already gave for this criterion
+        if error is None:
+            highest = 0
+            for score in EvaluationScore.query.filter_by(rubric_id=rubric.id).all():
+                if score.marks > highest:
+                    highest = score.marks
+            if data["max_marks"] < highest:
+                error = "Marks up to " + str(highest) + " were already given for this criterion."
         if error:
             flash(error, "danger")
             form = request.form
