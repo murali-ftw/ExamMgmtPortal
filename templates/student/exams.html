@@ -1,16 +1,35 @@
-{# Student: exams open for booking right now, with a search box #}
+{# Student: exams open for booking right now, with a search box and type/course filters #}
 {% extends "base.html" %}
 {% block title %}Exams{% endblock %}
 {% block content %}
 <h2 class="mb-3">Exams open for booking</h2>
+
+{# True when the search box or any filter is in use #}
+{% set filtering = q or exam_type or course_id is not none %}
 
 <form method="get" class="row g-2 mb-3">
     <div class="col-auto">
         <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Exam or course name">
     </div>
     <div class="col-auto">
+        <select name="exam_type" class="form-select">
+            <option value="">All types</option>
+            {% for type_name in exam_types %}
+            <option value="{{ type_name }}" {% if exam_type == type_name %}selected{% endif %}>{{ type_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-auto">
+        <select name="course_id" class="form-select">
+            <option value="">All courses</option>
+            {% for course in courses %}
+            <option value="{{ course.id }}" {% if course_id == course.id %}selected{% endif %}>{{ course.code }} - {{ course.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-auto">
         <button type="submit" class="btn btn-outline-secondary">Search</button>
-        {% if q %}<a class="btn btn-link" href="{{ url_for('student_exams.browse_exams') }}">Clear</a>{% endif %}
+        {% if filtering %}<a class="btn btn-link" href="{{ url_for('student_exams.browse_exams') }}">Clear</a>{% endif %}
     </div>
 </form>
 
@@ -45,7 +64,7 @@
         {% else %}
         <tr>
             <td colspan="7" class="text-center text-muted">
-                {% if q %}No open exams match "{{ q }}".{% else %}No exams are open for booking right now. Please check again later.{% endif %}
+                {% if filtering %}No open exams match your search and filters.{% else %}No exams are open for booking right now. Please check again later.{% endif %}
             </td>
         </tr>
         {% endfor %}

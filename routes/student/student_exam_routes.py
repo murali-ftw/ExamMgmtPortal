@@ -3,7 +3,8 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from database import db
 from helpers.auth_helpers import get_current_user, role_required
-from models import Exam, Slot
+from helpers.form_helpers import to_int
+from models import EXAM_TYPES, Course, Exam, Slot
 from rules.booking_rules import can_book
 from rules.window_rules import booking_open
 
@@ -22,21 +23,45 @@ def has_booked(student, exam):
 @bp.route("/")
 @role_required("student")
 def browse_exams():
-    # Exams whose booking is open today, with optional ?q= search on exam or course name
+    # Exams whose booking is open today; optional ?q= search, ?exam_type= and ?course_id= filters (all together)
     student = get_current_user()
     q = request.args.get("q", "").strip()
 
-    rows = []
+    # An unknown exam type or a non-number course id is ignored (treated as "no filter")
+    exam_type = request.args.get("exam_type", "")
+    if exam_type not in EXAM_TYPES:
+        exam_type = ""
+    course_id = to_int(request.args.get("course_id"))
+
+    # Only exams whose booking is open are ever shown
+    open_exams = []
     for exam in Exam.query.order_by(Exam.booking_end).all():
-        if not booking_open(exam):
-            continue
+        if booking_open(exam):
+            open_exams.append(exam)
+
+    # Course dropdown: only courses that have at least one open exam
+    open_course_ids = []
+    for exam in open_exams:
+        open_course_ids.append(exam.course_id)
+    courses = []
+    for course in Course.query.order_by(Course.code).all():
+        if course.id in open_course_ids:
+            courses.append(course)
+
+    rows = []
+    for exam in open_exams:
         if q != "":
             text = q.lower()
             if text not in exam.name.lower() and text not in exam.course.name.lower():
                 continue
+        if exam_type != "" and exam.exam_type != exam_type:
+            continue
+        if course_id is not None and exam.course_id != course_id:
+            continue
         rows.append({"exam": exam, "already_booked": has_booked(student, exam)})
 
-    return render_template("student/exams.html", rows=rows, q=q)
+    return render_template("student/exams.html", rows=rows, q=q, exam_type=exam_type, course_id=course_id,
+                           exam_types=EXAM_TYPES, courses=courses)
 
 
 @bp.route("/<int:exam_id>/slots")
