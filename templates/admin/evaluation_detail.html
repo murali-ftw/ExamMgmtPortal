@@ -1,0 +1,45 @@
+{# Admin: one evaluation with marks per rubric criterion, total and remarks (read-only) #}
+{% extends "base.html" %}
+{% block title %}Evaluation {{ evaluation.id }}{% endblock %}
+{% block content %}
+<a href="{{ url_for('admin_evaluations.list_evaluations') }}">&larr; Back to evaluations</a>
+
+<h2 class="mt-2">Evaluation {{ evaluation.id }}</h2>
+<table class="table table-sm w-auto">
+    <tr><th>Student</th><td>{{ booking.student.name }} ({{ booking.student.email }}, ID {{ booking.student_id }})</td></tr>
+    <tr><th>Exam</th><td>{{ booking.slot.exam.name }} ({{ booking.slot.exam.exam_type }})</td></tr>
+    <tr><th>Course</th><td>{{ booking.slot.exam.course.code }} - {{ booking.slot.exam.course.name }}</td></tr>
+    <tr><th>Examiner</th><td>{{ booking.slot.examiner.name }}</td></tr>
+    <tr><th>Booking</th><td>{{ booking.id }} &middot; slot on {{ booking.slot.date }} at {{ booking.slot.start_time.strftime('%H:%M') }}</td></tr>
+    <tr><th>Evaluated on</th><td>{{ evaluation.evaluated_on.strftime('%Y-%m-%d %H:%M') }}</td></tr>
+</table>
+
+<table class="table table-bordered">
+    <thead class="table-light">
+        <tr>
+            <th>Criterion</th>
+            <th>Marks obtained</th>
+            <th>Out of</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for score in evaluation.scores %}
+        <tr>
+            <td>{{ score.rubric.criterion_name }}</td>
+            <td>{{ score.marks }}</td>
+            <td>{{ score.rubric.max_marks }}</td>
+        </tr>
+        {% endfor %}
+        <tr class="fw-bold">
+            <td>Total</td>
+            <td>{{ evaluation.total_marks }}</td>
+            <td>{{ booking.slot.exam.max_marks }}</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="card">
+    <div class="card-header">Examiner's remarks</div>
+    <div class="card-body">{{ evaluation.remarks }}</div>
+</div>
+{% endblock %}

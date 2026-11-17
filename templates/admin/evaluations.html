@@ -1,0 +1,56 @@
+{# Admin: every evaluation of every examiner, newest first, with a search (read-only) #}
+{% extends "base.html" %}
+{% block title %}Evaluations{% endblock %}
+{% block content %}
+<h2>All Evaluations</h2>
+<p class="text-muted">Marks submitted by all examiners, newest first. This page is read-only.</p>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Evaluation / booking / student ID, name or exam">
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-secondary">Search</button>
+        {% if q %}<a class="btn btn-link" href="{{ url_for('admin_evaluations.list_evaluations') }}">Clear</a>{% endif %}
+    </div>
+</form>
+
+<table class="table table-bordered table-hover">
+    <thead class="table-light">
+        <tr>
+            <th>ID</th>
+            <th>Booking</th>
+            <th>Student</th>
+            <th>Exam</th>
+            <th>Course</th>
+            <th>Examiner</th>
+            <th>Total</th>
+            <th>Evaluated on</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for evaluation in evaluations %}
+        <tr>
+            <td>{{ evaluation.id }}</td>
+            <td>{{ evaluation.booking_id }}</td>
+            <td>{{ evaluation.booking.student.name }} <span class="small text-muted">(ID {{ evaluation.booking.student_id }})</span></td>
+            <td>{{ evaluation.booking.slot.exam.name }}</td>
+            <td>{{ evaluation.booking.slot.exam.course.code }} - {{ evaluation.booking.slot.exam.course.name }}</td>
+            <td>{{ evaluation.booking.slot.examiner.name }}</td>
+            <td>{{ evaluation.total_marks }} / {{ evaluation.booking.slot.exam.max_marks }}</td>
+            <td>{{ evaluation.evaluated_on.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td>
+                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin_evaluations.evaluation_detail', evaluation_id=evaluation.id) }}">View</a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="9" class="text-center text-muted">
+                {% if q %}No evaluations match "{{ q }}".{% else %}No evaluations have been submitted yet.{% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

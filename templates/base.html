@@ -26,6 +26,7 @@
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_students.list_students') }}">Students</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_slots.list_slots') }}">Slots</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_bookings.list_bookings') }}">Bookings</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_evaluations.list_evaluations') }}">Evaluations</a></li>
                 {% elif current_user and current_user.role == "examiner" %}
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('examiner_dashboard.dashboard') }}">Dashboard</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('examiner_exams.my_exams') }}">My Exams</a></li>
